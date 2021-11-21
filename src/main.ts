@@ -91,4 +91,52 @@ const animate: FrameRequestCallback = (time) => {
 
   requestAnimationFrame(animate);
 };
-requestAnimationFrame(animate);
+
+function startAnimation() {
+  requestAnimationFrame(animate);
+}
+
+let isDrawing = false;
+const sketch: Point[] = [];
+
+function showSketch(sketch: Point[]) {
+  context.clearRect(0, 0, 400, 400);
+
+  context.save();
+
+  if (sketch.length >= 2) {
+    for (let i = 0; i < sketch.length - 1; i++) {
+      context.beginPath();
+      context.moveTo(sketch[i].x, sketch[i].y);
+      context.lineTo(sketch[i + 1].x, sketch[i + 1].y);
+      context.stroke();
+    }
+
+    // Close the shape
+    context.beginPath();
+    context.moveTo(sketch[sketch.length - 1].x, sketch[sketch.length - 1].y);
+    context.lineTo(sketch[0].x, sketch[0].y);
+    context.stroke();
+  }
+
+  context.restore();
+}
+
+canvas.addEventListener('mousedown', (e) => {
+  isDrawing = true;
+  sketch.length = 0;
+  sketch.push({ x: e.offsetX, y: e.offsetY });
+  showSketch(sketch);
+});
+
+canvas.addEventListener('mouseup', (e) => {
+  isDrawing = false;
+});
+
+canvas.addEventListener('mousemove', (e) => {
+  if (isDrawing) {
+    sketch.push({ x: e.offsetX, y: e.offsetY });
+    console.log('hi');
+    showSketch(sketch);
+  }
+});
