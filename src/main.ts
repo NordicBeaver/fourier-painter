@@ -1,7 +1,10 @@
 import * as math from 'mathjs';
+import { calculateTransformCoefficients } from './fourier';
 
 const canvas = document.getElementById('canvas') as HTMLCanvasElement;
 const context = canvas.getContext('2d')!;
+
+const startButton = document.getElementById('startButton') as HTMLButtonElement;
 
 const canvasWidth = 400;
 const canvasHeight = 400;
@@ -17,15 +20,17 @@ interface Arrow {
   origin: Point;
   length: number;
   frequency: number;
+  initialAngle: number;
   angle: number;
 }
 
-function createArrow(length: number, frequency: number) {
+function createArrow(length: number, frequency: number, initialAngle: number = 0) {
   const arrow: Arrow = {
     origin: { x: 0, y: 0 },
     length: length,
     frequency: frequency,
-    angle: 0,
+    initialAngle: initialAngle,
+    angle: initialAngle,
   };
   return arrow;
 }
@@ -41,7 +46,7 @@ function getArrowEnd(arrow: Arrow) {
 function updateArrows(arrows: Arrow[], phase: number) {
   for (let i = 0; i < arrows.length; i++) {
     const arrow = arrows[i];
-    arrow.angle = phase * arrow.frequency;
+    arrow.angle = arrow.initialAngle + phase * arrow.frequency;
     if (i != 0) {
       const prevEnd = getArrowEnd(arrows[i - 1]);
       arrow.origin = prevEnd;
@@ -62,8 +67,17 @@ const arrows: Arrow[] = [createArrow(100, 1), createArrow(50, -0.5), createArrow
 
 const shape: [number, number][] = [];
 
+let startTime: number | null = 0;
+
 const animate: FrameRequestCallback = (time) => {
-  updateArrows(arrows, time / 1000);
+  if (startTime === null) {
+    startTime = time;
+    requestAnimationFrame(animate);
+  }
+
+  const totalTime = time - startTime;
+
+  updateArrows(arrows, totalTime / 1000);
 
   const lastArrowEnd = getArrowEnd(arrows[arrows.length - 1]);
   shape.push([lastArrowEnd.x, lastArrowEnd.y]);
@@ -93,6 +107,7 @@ const animate: FrameRequestCallback = (time) => {
 };
 
 function startAnimation() {
+  startTime = null;
   requestAnimationFrame(animate);
 }
 
@@ -139,4 +154,21 @@ canvas.addEventListener('mousemove', (e) => {
     console.log('hi');
     showSketch(sketch);
   }
+});
+
+startButton.addEventListener('click', (e) => {
+  const sketchValuesAsComplex = sketch.map((point) => math.complex(point.x - 200, point.y - 200));
+  const fourierCoefficients = calculateTransformCoefficients(sketchValuesAsComplex, -50, 50);
+
+  const newArrows = fourierCoefficients.map((c, index) => {
+    const length = math.sqrt(c.re * c.re + c.im * c.im);
+    const initialAngle = math.atan2(c.im, c.re);
+    const frequncy = index - 50;
+    const arrow = createArrow(length, frequncy, initialAngle);
+    return arrow;
+  });
+
+  arrows.length = 0;
+  arrows.push(...newArrows);
+  startAnimation();
 });
