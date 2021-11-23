@@ -14,18 +14,15 @@ const context = canvas.getContext('2d')!;
 const startButton = document.getElementById('startButton') as HTMLButtonElement;
 const resetButton = document.getElementById('resetButton') as HTMLButtonElement;
 
-const canvasWidth = 400;
-const canvasHeight = 400;
-
-const originX = canvasWidth / 2;
-const originY = canvasHeight / 2;
+const originX = canvas.width / 2;
+const originY = canvas.height / 2;
 
 export interface Point {
   x: number;
   y: number;
 }
 
-const arrows: Arrow[] = [createArrow(100, 1), createArrow(50, -0.5), createArrow(20, 8)];
+const arrows: Arrow[] = [];
 
 const shape: [number, number][] = [];
 
@@ -57,7 +54,7 @@ function drawArrowsAndShape() {
 }
 
 const animationFrame: FrameRequestCallback = (time) => {
-  context.clearRect(0, 0, 400, 400);
+  context.clearRect(0, 0, canvas.width, canvas.height);
 
   if (isArrowsAnimationGoing) {
     if (arrowsAnimationStartTime === null) {
@@ -82,13 +79,17 @@ startButton.addEventListener('click', (e) => {
   shape.length = 0;
   arrowsAnimationStartTime = null;
 
-  const sketchValuesAsComplex = sketch.map((point) => math.complex(point.x - 200, point.y - 200));
-  const fourierCoefficients = calculateTransformCoefficients(sketchValuesAsComplex, -50, 50);
+  const sketchValuesAsComplex = sketch.map((point) => math.complex(point.x - originX, point.y - originY));
+
+  const coeffIndexFrom = -50;
+  const coeffIndexTo = 50;
+
+  const fourierCoefficients = calculateTransformCoefficients(sketchValuesAsComplex, coeffIndexFrom, coeffIndexTo);
 
   const newArrows = fourierCoefficients.map((c, index) => {
     const length = math.sqrt(c.re * c.re + c.im * c.im);
     const initialAngle = math.atan2(c.im, c.re);
-    const frequncy = index - 50;
+    const frequncy = coeffIndexFrom + index;
     const arrow = createArrow(length, frequncy, initialAngle);
     return arrow;
   });
