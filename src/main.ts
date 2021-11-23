@@ -3,10 +3,16 @@ import { Arrow, createArrow, drawArrow, getArrowEnd, updateArrows } from './arro
 import { calculateTransformCoefficients } from './fourier';
 import { drawSketch, initUserDrawing } from './userDrawing';
 
+const container = document.getElementById('container') as HTMLDivElement;
 const canvas = document.getElementById('canvas') as HTMLCanvasElement;
+
+canvas.width = container.clientWidth;
+canvas.height = container.clientWidth;
+
 const context = canvas.getContext('2d')!;
 
 const startButton = document.getElementById('startButton') as HTMLButtonElement;
+const resetButton = document.getElementById('resetButton') as HTMLButtonElement;
 
 const canvasWidth = 400;
 const canvasHeight = 400;
@@ -72,6 +78,10 @@ const animationFrame: FrameRequestCallback = (time) => {
 requestAnimationFrame(animationFrame);
 
 startButton.addEventListener('click', (e) => {
+  arrows.length = 0;
+  shape.length = 0;
+  arrowsAnimationStartTime = null;
+
   const sketchValuesAsComplex = sketch.map((point) => math.complex(point.x - 200, point.y - 200));
   const fourierCoefficients = calculateTransformCoefficients(sketchValuesAsComplex, -50, 50);
 
@@ -83,8 +93,17 @@ startButton.addEventListener('click', (e) => {
     return arrow;
   });
 
-  arrows.length = 0;
   arrows.push(...newArrows);
 
   isArrowsAnimationGoing = true;
+
+  startButton.style.display = 'none';
+  resetButton.style.display = 'block';
+});
+
+resetButton.addEventListener('click', (e) => {
+  isArrowsAnimationGoing = false;
+
+  startButton.style.display = 'block';
+  resetButton.style.display = 'none';
 });
