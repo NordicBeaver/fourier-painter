@@ -64,6 +64,12 @@ const animationFrame: FrameRequestCallback = (time) => {
       updateArrows(arrows, totalTime / 1000);
       const lastArrowEnd = getArrowEnd(arrows[arrows.length - 1]);
       shape.push([lastArrowEnd.x, lastArrowEnd.y]);
+      // Don't let the shape grow to big. Otherwise with time it will eat all memory.
+      // 10K elements should be more than enough. I'm a bit lazy now to calculate the exact amount.
+      console.log(shape.length);
+      if (shape.length > 10000) {
+        shape.shift();
+      }
       drawArrowsAndShape();
     }
   } else {
