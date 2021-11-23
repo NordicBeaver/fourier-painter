@@ -6,11 +6,43 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Document</title>
+
+  <style>
+    body {
+      background-color: #1a1a1a;
+    }
+
+    #canvas {
+      border: 2px solid #FAFAFF;
+      margin-bottom: 2em;
+    }
+
+    .container {
+      width: 400px;
+      padding: 2em 0;
+      margin: auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .button {
+      padding: 5px 10px;
+      font-size: 1em;
+      background-color: transparent;
+      border: 2px solid #FAFAFF;
+      color: #FAFAFF;
+      text-transform: uppercase;
+      cursor: pointer;
+    }
+  </style>
 </head>
 
 <body>
-  <canvas id="canvas" width="400" height="400" style="border: 1px solid black"></canvas>
-  <button id="startButton">Start</button>
+  <div class="container">
+    <canvas id="canvas" width="400" height="400"></canvas>
+    <button id="startButton" class="button">Start</button>
+  </div>
 
   <script src="main.ts" type="module"></script>
 </body>

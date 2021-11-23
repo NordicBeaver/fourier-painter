@@ -26,6 +26,8 @@ export function initUserDrawing(element: HTMLElement) {
 export function drawSketch(sketch: Point[], context: CanvasRenderingContext2D) {
   context.save();
 
+  context.strokeStyle = '#FAFAFF';
+  context.lineWidth = 2;
   if (sketch.length >= 2) {
     for (let i = 0; i < sketch.length - 1; i++) {
       context.beginPath();
@@ -36,6 +38,7 @@ export function drawSketch(sketch: Point[], context: CanvasRenderingContext2D) {
 
     // Close the shape
     context.beginPath();
+    context.lineWidth = 1;
     context.moveTo(sketch[sketch.length - 1].x, sketch[sketch.length - 1].y);
     context.lineTo(sketch[0].x, sketch[0].y);
     context.stroke();

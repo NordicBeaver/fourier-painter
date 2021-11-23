@@ -39,6 +39,8 @@ function drawArrowsAndShape() {
 
   if (shape.length >= 2) {
     context.beginPath();
+    context.strokeStyle = '#DE6B48';
+    context.lineWidth = 2;
     context.moveTo(shape[0][0], shape[0][1]);
     for (let i = 1; i < shape.length; i++) {
       context.lineTo(shape[i][0], shape[i][1]);
@@ -83,5 +85,6 @@ startButton.addEventListener('click', (e) => {
 
   arrows.length = 0;
   arrows.push(...newArrows);
+
   isArrowsAnimationGoing = true;
 });
