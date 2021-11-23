@@ -4,21 +4,50 @@ export function initUserDrawing(element: HTMLElement) {
   let isDrawing = false;
   const sketch: Point[] = [];
 
+  // Mouse events
   element.addEventListener('mousedown', (e) => {
     isDrawing = true;
     sketch.length = 0;
     sketch.push({ x: e.offsetX, y: e.offsetY });
   });
-
   element.addEventListener('mouseup', (e) => {
     isDrawing = false;
   });
-
   element.addEventListener('mousemove', (e) => {
     if (isDrawing) {
       sketch.push({ x: e.offsetX, y: e.offsetY });
     }
   });
+
+  // Touch events
+  element.addEventListener('touchstart', (e) => {
+    isDrawing = true;
+    sketch.length = 0;
+    const elementRect = element.getBoundingClientRect();
+    sketch.push({
+      x: e.changedTouches[0].clientX - elementRect.x,
+      y: e.changedTouches[0].clientY - elementRect.y,
+    });
+  });
+  element.addEventListener('touchend', (e) => {
+    isDrawing = false;
+  });
+  element.addEventListener(
+    'touchmove',
+    (e) => {
+      e.preventDefault();
+      if (isDrawing) {
+        const elementRect = element.getBoundingClientRect();
+        sketch.push({
+          x: e.changedTouches[0].clientX - elementRect.x,
+          y: e.changedTouches[0].clientY - elementRect.y,
+        });
+      }
+    },
+    {
+      passive: false, // Set this so we can preventDefault.
+    }
+  );
 
   return sketch;
 }
