@@ -43,6 +43,7 @@ export function drawArrow(context: CanvasRenderingContext2D, arrow: Arrow) {
 
   context.beginPath();
   context.strokeStyle = '#FAFAFF';
+  context.lineWidth = 2;
   context.moveTo(arrow.origin.x, arrow.origin.y);
   context.lineTo(end.x, end.y);
   context.stroke();
